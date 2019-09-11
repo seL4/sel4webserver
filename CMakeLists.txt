@@ -23,12 +23,27 @@ camkes_arm_vm_setup_arm_vm_environment()
 find_package(camkes-vm-linux REQUIRED)
 include(${CAMKES_VM_LINUX_HELPERS_PATH})
 
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/lighttpd)
+find_package(lighttpd REQUIRED)
+lighttpd_install_to_overlay(overlay)
+
+# Generate overlayed rootfs
 set(rootfs_file "${CAMKES_VM_IMAGES_DIR}/exynos5422/rootfs.cpio.gz")
-AddToFileServer("linux-initrd" ${rootfs_file})
+AddOverlayDirToRootfs(
+    overlay
+    ${rootfs_file}
+    "buildroot"
+    "rootfs_install"
+    output_overlayed_rootfs_location
+    rootfs_target
+    GZIP
+)
+
+AddToFileServer("linux-initrd" ${output_overlayed_rootfs_location} DEPENDS rootfs_target)
 # Updated dtb based on initrd
 UpdateDtbFromInitrd(
     "${CAMKES_VM_IMAGES_DIR}/exynos5422/linux-dtb"
-    ${rootfs_file}
+    ${output_overlayed_rootfs_location}
     "0x4d700000"
     dtb_gen_target
     output_dtb_location
