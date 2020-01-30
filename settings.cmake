@@ -14,6 +14,8 @@ cmake_minimum_required(VERSION 3.7.2)
 
 set(project_dir "${CMAKE_CURRENT_LIST_DIR}/../../")
 set(SEL4_CONFIG_DEFAULT_ADVANCED ON)
+set(supported "exynos5422;qemu-arm-virt")
+
 file(GLOB project_modules ${project_dir}/projects/*)
 list(
     APPEND
@@ -26,8 +28,24 @@ list(
 
 include(application_settings)
 
-set(KernelPlatform exynos5 CACHE STRING "" FORCE)
-set(KernelARMPlatform exynos5422 CACHE STRING "" FORCE)
+if("${PLATFORM}" STREQUAL "")
+    set(PLATFORM "exynos5422")
+endif()
+if (NOT "${PLATFORM}" IN_LIST supported)
+    message(FATAL_ERROR "PLATFORM: ${PLATFORM} not supported. Supported: ${supported}")
+endif()
+if("${PLATFORM}" STREQUAL "exynos5422")
+    set(KernelPlatform exynos5 CACHE STRING "" FORCE)
+    set(KernelARMPlatform exynos5422 CACHE STRING "" FORCE)
+endif()
+if("${PLATFORM}" STREQUAL "qemu-arm-virt")
+    set(KernelPlatform qemu-arm-virt CACHE STRING "" FORCE)
+    set(KernelARMPlatform qemu-arm-virt CACHE STRING "" FORCE)
+    set(QEMU_MEMORY "2048")
+    set(KernelArmCPU cortex-a53 CACHE STRING "" FORCE)
+    set(VmInitRdFile ON CACHE BOOL "" FORCE)
+    set(KernelArmHypervisorSupport ON CACHE BOOL "" FORCE)
+endif()
 set(KernelSel4Arch "arm_hyp" CACHE STRING "" FORCE)
 set(KernelRootCNodeSizeBits 18 CACHE STRING "" FORCE)
 # CAmkES Settings
