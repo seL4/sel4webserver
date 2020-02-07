@@ -35,6 +35,7 @@ set(CAmkESCPP ON CACHE BOOL "" FORCE)
 
 # capDL settings
 set(CapDLLoaderMaxObjects 90000 CACHE STRING "" FORCE)
+set(LibUSB OFF CACHE BOOL "" FORCE)
 
 find_package(seL4 REQUIRED)
 sel4_configure_platform_settings()
