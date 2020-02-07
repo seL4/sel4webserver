@@ -43,15 +43,6 @@ AddOverlayDirToRootfs(
 )
 
 AddToFileServer("linux-initrd" ${output_overlayed_rootfs_location} DEPENDS rootfs_target)
-# Updated dtb based on initrd
-UpdateDtbFromInitrd(
-    "${CAMKES_VM_IMAGES_DIR}/exynos5422/linux-dtb"
-    ${output_overlayed_rootfs_location}
-    "0x4d700000"
-    dtb_gen_target
-    output_dtb_location
-)
-AddToFileServer("linux-dtb" "${output_dtb_location}" DEPENDS dtb_gen_target)
 AddToFileServer("linux" "${CAMKES_VM_IMAGES_DIR}/exynos5422/linux")
 DefineCAmkESVMFileServer()
 

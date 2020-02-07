@@ -38,7 +38,10 @@ assembly {
 
         vm0.num_extra_frame_caps = 0;
         vm0.extra_frame_map_address = 0;
-        vm0.linux_image_config = {};
+        vm0.linux_image_config = {
+            "linux_bootcmdline" : "console=ttySAC2,115200n8 root=/dev/ram0 nosmp rw pci=nomsi",
+            "linux_stdout" : "serial2:115200n8",
+        };
         vm0.linux_address_config = {
             "linux_ram_base" : VAR_STRINGIZE(VM_RAM_BASE),
             "linux_ram_paddr_base" : VAR_STRINGIZE(VM_RAM_BASE),
@@ -49,7 +52,7 @@ assembly {
             "initrd_addr" : VAR_STRINGIZE(VM_INITRD_ADDR)
         };
 
-        vm0.dtb = dtb([{"path": "/firmware@02073000"},
+        vm0.dtb = dtb([{"path": "/firmware@2073000"},
                       {"path": "/soc/audss-clock-controller@3810000"},
                       {"path": "/soc/i2s@3830000"},
                       {"path": "/soc/pinctrl@3860000"},
