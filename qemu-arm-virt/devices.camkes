@@ -50,7 +50,7 @@ assembly {
                     "0x3eff0000:16", // QEMU PCI IO ports
                     "0x40000000:29", // Linux kernel memory regions
                     ];
-        vm0.irqs =  [27, 35, 36, 37, 38];
+        vm0.irqs =  [35, 36, 37, 38];
 
     }
 }
