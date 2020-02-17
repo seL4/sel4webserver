@@ -41,6 +41,7 @@ macro(lighttpd_build_server outfile)
     )
     # Force static linking of pthread symbols
     set(linker_flags -static\ -u\ pthread_mutex_lock\ -u\ pthread_mutex_unlock\ -lpthread)
+    find_package(Git)
     ExternalProject_Add(
         lighttpd
         GIT_REPOSITORY
@@ -49,6 +50,10 @@ macro(lighttpd_build_server outfile)
         TRUE
         GIT_PROGRESS
         TRUE
+        GIT_TAG
+        lighttpd-1.4.55
+        PATCH_COMMAND
+        ${GIT_EXECUTABLE} apply ${LIGHTTPD_DIR}/lighttpd_cmake.patch
         BINARY_DIR
         ${CMAKE_CURRENT_BINARY_DIR}/lighttpd
         BUILD_ALWAYS

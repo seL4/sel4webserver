@@ -1,0 +1,51 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 1bdef07..e8310a3 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -221,15 +221,19 @@ check_c_source_compiles("
+ 	" HAVE_STRUCT_TM_GMTOFF)
+ 
+ ## refactor me
+-macro(XCONFIG _package _include_DIR _link_DIR _link_FLAGS _cflags)
++macro(_XCONFIG _package _include_DIR _link_DIR _link_FLAGS _cflags _config_PROG)
+ # reset the variables at the beginning
+ 	set(${_include_DIR})
+ 	set(${_link_DIR})
+ 	set(${_link_FLAGS})
+ 	set(${_cflags})
++    set(${_config_PROG})
+ 
+-	find_program(${_package}CONFIG_EXECUTABLE NAMES ${_package} PATHS /usr/local/bin )
+-
++    if (${_config_PROG} STREQUAL "")
++        find_program(${_package}CONFIG_EXECUTABLE NAMES ${_package} PATHS ${_search_DIR} )
++    else()
++        set(${_package}CONFIG_EXECUTABLE ${_config_PROG})
++    endif()
+ 	# if pkg-config has been found
+ 	if(${_package}CONFIG_EXECUTABLE)
+ 		set(XCONFIG_EXECUTABLE "${${_package}CONFIG_EXECUTABLE}")
+@@ -242,6 +246,10 @@ macro(XCONFIG _package _include_DIR _link_DIR _link_FLAGS _cflags)
+ 	else()
+ 		message(STATUS "found ${_package}: no")
+ 	endif()
++endmacro(_XCONFIG _package _include_DIR _link_DIR _link_FLAGS _cflags _config_PROG)
++
++macro(XCONFIG _package _include_DIR _link_DIR _link_FLAGS _cflags)
++    _xconfig(_package _include_DIR _link_DIR _link_FLAGS _cflags "")
+ endmacro(XCONFIG _package _include_DIR _link_DIR _link_FLAGS _cflags)
+ 
+ if(WITH_XATTR)
+@@ -371,7 +379,11 @@ endif()
+ 
+ if(WITH_PCRE)
+ 	## if we have pcre-config, use it
+-	xconfig(pcre-config PCRE_INCDIR PCRE_LIBDIR PCRE_LDFLAGS PCRE_CFLAGS)
++    if(PCRE_CONFIG)
++        _xconfig(pcre-config PCRE_INCDIR PCRE_LIBDIR PCRE_LDFLAGS PCRE_CFLAGS ${PCRE_CONFIG})
++    else()
++        xconfig(pcre-config PCRE_INCDIR PCRE_LIBDIR PCRE_LDFLAGS PCRE_CFLAGS)
++    endif()
+ 	if(PCRE_LDFLAGS OR PCRE_CFLAGS)
+ 		message(STATUS "found pcre at: LDFLAGS: ${PCRE_LDFLAGS} CFLAGS: ${PCRE_CFLAGS}")
+ 
