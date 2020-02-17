@@ -49,6 +49,7 @@ if("${PLATFORM}" STREQUAL "qemu-arm-virt")
 endif()
 set(KernelSel4Arch "arm_hyp" CACHE STRING "" FORCE)
 set(KernelRootCNodeSizeBits 18 CACHE STRING "" FORCE)
+set(KernelArmVtimerUpdateVOffset OFF CACHE BOOL "" FORCE)
 set(KernelArmDisableWFIWFETraps ON CACHE BOOL "" FORCE)
 
 # CAmkES Settings
