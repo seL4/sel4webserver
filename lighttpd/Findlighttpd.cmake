@@ -69,6 +69,7 @@ macro(lighttpd_build_server outfile)
         -DBUILD_SHARED_LIBS=OFF
         -DCMAKE_FIND_LIBRARY_SUFFIXES=".a"
         -DPCRE_CONFIG="${CMAKE_CURRENT_BINARY_DIR}/libpcre/_install/bin/pcre-config"
+        -DWITH_ZLIB=0
         DEPENDS
         libpcre
     )
