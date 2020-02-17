@@ -16,7 +16,29 @@ set(LIGHTTPD_RUN_SCRIPT "${LIGHTTPD_DIR}/lighttpd.sh" CACHE STRING "")
 mark_as_advanced(LIGHTTPD_DIR LIGHTTPD_CONF LIGHTTPD_RUN_SCRIPT)
 
 macro(lighttpd_build_server outfile)
+    string(REGEX MATCH "^(.+)\-$" config_host "${CROSS_COMPILER_PREFIX}" )
+    set(config_host "${CMAKE_MATCH_1}")
     include(ExternalProject)
+    # Static compile of pcre library
+    ExternalProject_Add(
+        libpcre
+        URL
+        https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz
+        BINARY_DIR
+        ${CMAKE_CURRENT_BINARY_DIR}/libprce-prefix/src/libpcre
+        BUILD_ALWAYS
+        ON
+        EXCLUDE_FROM_ALL
+        SOURCE_DIR
+        ${CMAKE_CURRENT_BINARY_DIR}/libprce-prefix/src/libpcre
+        CONFIGURE_COMMAND
+        ./configure --host=${config_host} CC=${CMAKE_C_COMPILER} AR=${CMAKE_AR} STRIP=${DCMAKE_STRIP}
+        RANLIB=${CMAKE_RANLIB} --prefix=${CMAKE_CURRENT_BINARY_DIR}/libpcre/_install
+        BUILD_COMMAND
+        make
+        INSTALL_COMMAND
+        make install
+    )
     # Force static linking of pthread symbols
     set(linker_flags -static\ -u\ pthread_mutex_lock\ -u\ pthread_mutex_unlock\ -lpthread)
     ExternalProject_Add(
@@ -41,6 +63,9 @@ macro(lighttpd_build_server outfile)
         -DCMAKE_EXE_LINKER_FLAGS=${linker_flags}
         -DBUILD_SHARED_LIBS=OFF
         -DCMAKE_FIND_LIBRARY_SUFFIXES=".a"
+        -DPCRE_CONFIG="${CMAKE_CURRENT_BINARY_DIR}/libpcre/_install/bin/pcre-config"
+        DEPENDS
+        libpcre
     )
     include(external-project-helpers)
     DeclareExternalProjObjectFiles(
