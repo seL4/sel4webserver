@@ -47,9 +47,9 @@ endmacro()
 
 macro(docsite_install_to_overlay overlay)
 
-    AddFileToOverlayDir("S90unpack_site" ${DOCSITE_RUN_SCRIPT} "etc/init.d" overlay)
+    AddFileToOverlayDir("S90unpack_site" ${DOCSITE_RUN_SCRIPT} "etc/init.d" ${overlay})
     docsite_build_site_tar(site_tar)
-    AddFileToOverlayDir("site.tar.gz" ${site_tar} "var" overlay)
+    AddFileToOverlayDir("site.tar.gz" ${site_tar} "var" ${overlay})
 
 endmacro()
 
