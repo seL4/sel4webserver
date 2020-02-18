@@ -18,9 +18,12 @@ a webserver inside a Linux VM component to serve a static website.
 
 ## Current status
 
-Currently there is a single configuration for serving a static website from a webserver running
-inside a Linux guest on an [odroid-xu4][odroid-xu4] on a local network. It would be possible to
-modify which static website is being served by modifying the static html files located in `/run/site/`
+Currently there are two configurations for serving a static website from a webserver running
+inside a Linux guest on an [odroid-xu4][odroid-xu4] on a local network. This includes a configuration
+with a single VM instance that serves a static website. The second configuration involves
+multiple VM's serving a static website. The multiple VM configuration has an additional VM that acts
+as an network access point for the other VMs.
+It would be possible to modify which static website is being served by modifying the static html files located in `/run/site/`
 in the Linux guest's file system.
 
 [odroid-xu4]:https://wiki.odroid.com/odroid-xu4/odroid-xu4
@@ -63,7 +66,10 @@ Additional dependencies required to run a lighttpd webserver serving docs.sel4.s
 # Obtain sources via repo tool
 repo init -u https://github.com/SEL4PROJ/sel4webserver-manifest.git
 repo sync
+```
 
+#### Configure: Single VM Webserver
+```sh
 # Initalise project build directory
 mkdir build
 cd build
@@ -71,7 +77,20 @@ cd build
 # -- Configuring done
 # -- Generating done
 # -- Build files have been written to: /tmp/tmp.xmwD2Fc3FW/buildweb
+```
+#### Configure: Multi-VM Webserver
+```sh
+# Initalise project build directory
+mkdir build
+cd build
+../init-build.sh -DMULTI_VM_LAN=1
+# -- Configuring done
+# -- Generating done
+# -- Build files have been written to: /tmp/tmp.xmwD2Fc3FW/buildweb
+```
 
+#### Build Webserver
+```sh
 # build
 ninja
 # [0/1] Re-running CMake...
