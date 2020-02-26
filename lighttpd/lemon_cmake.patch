@@ -1,0 +1,18 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 1bdef07..31490a2 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -665,7 +665,12 @@ if(WIN32)
+ 	set(COMMON_SRC ${COMMON_SRC} xgetopt.c)
+ endif()
+ 
+-add_executable(lemon lemon.c)
++add_custom_command(
++    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/lemon
++    COMMAND gcc ${CMAKE_CURRENT_SOURCE_DIR}/lemon.c -o ${CMAKE_CURRENT_BINARY_DIR}/lemon
++    VERBATIM
++    DEPENDS lemon.c
++)
+ 
+ ## Build parsers by using lemon...
+ lemon_parser(configparser.y)

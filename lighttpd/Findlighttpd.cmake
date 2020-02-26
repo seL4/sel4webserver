@@ -53,7 +53,7 @@ macro(lighttpd_build_server outfile)
         GIT_TAG
         lighttpd-1.4.55
         PATCH_COMMAND
-        ${GIT_EXECUTABLE} apply ${LIGHTTPD_DIR}/lighttpd_cmake.patch
+        ${GIT_EXECUTABLE} apply ${LIGHTTPD_DIR}/lighttpd_cmake.patch ${LIGHTTPD_DIR}/lemon_cmake.patch
         BINARY_DIR
         ${CMAKE_CURRENT_BINARY_DIR}/lighttpd
         BUILD_ALWAYS
