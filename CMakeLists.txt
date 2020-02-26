@@ -26,8 +26,6 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/lighttpd ${CMAKE_CURRENT
 find_package(lighttpd REQUIRED)
 find_package(docsite REQUIRED)
 
-set(VmInitRdFile ON CACHE BOOL "" FORCE)
-
 if("${PLATFORM}" STREQUAL "exynos5422")
     set(cpp_flags "-DKERNELARMPLATFORM_EXYNOS5422")
     set(rootfs_file "${CAMKES_VM_IMAGES_DIR}/exynos5422/rootfs.cpio.gz")
