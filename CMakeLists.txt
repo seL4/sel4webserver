@@ -11,9 +11,10 @@
 #
 
 cmake_minimum_required(VERSION 3.12.0)
+include(settings.cmake)
+
 project(sel4webserver C ASM)
 
-include(settings.cmake)
 
 find_package(camkes-arm-vm REQUIRED)
 camkes_arm_vm_setup_arm_vm_environment()
