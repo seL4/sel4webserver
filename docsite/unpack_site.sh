@@ -15,3 +15,4 @@ cd /run
 gunzip /var/site.tar.gz
 tar -xf /var/site.tar
 mv _site site
+touch site/secure
