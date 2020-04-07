@@ -188,6 +188,15 @@ DefineCAmkESVMFileServer()
 
 CAmkESAddImportPath(${KernelARMPlatform})
 
+
+# Define our demo component that shares a dataport with the VM
+include(cpio)
+MakeCPIO(secure_file_archive.o ${CMAKE_CURRENT_SOURCE_DIR}/secure_file.html)
+DeclareCAmkESComponent(LoggingFileserver SOURCES components/logging-fileserver/fileserver.c secure_file_archive.o)
+
+# Define our VM Component with out cross vm dataports glue code
+DeclareCAmkESComponent(VM SOURCES src/cross_vm_connections.c)
+
 # Declare root server
 if(MULTI_VM_LAN)
     DeclareCAmkESRootserver(multi_main.camkes CPP_INCLUDES ${CAMKES_ARM_VM_DIR}/components/VM)
