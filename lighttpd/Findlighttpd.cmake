@@ -45,7 +45,7 @@ macro(lighttpd_build_server outfile)
     ExternalProject_Add(
         lighttpd
         GIT_REPOSITORY
-        git://git.lighttpd.net/lighttpd/lighttpd1.4.git
+        https://github.com/lighttpd/lighttpd1.4.git
         GIT_SHALLOW
         TRUE
         GIT_PROGRESS
