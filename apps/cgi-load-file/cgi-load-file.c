@@ -37,6 +37,16 @@ void emit_event(char* emit) {
 	emit[0] = 1;
 }
 
+void memcpy_byte(void *dst, void *src, size_t size) {
+    char *dst_c = dst;
+    char *src_c = src;
+    for (int i = 0; i < size; i++) {
+        *dst_c = *src_c;
+        dst_c++;
+        src_c++;
+    }
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -63,13 +73,15 @@ int main(int argc, char *argv[])
     }
 
     /* Write file name into data port */
-    size_t file_name = query_string ? strnlen(query_string, 4095) : 0;
-    memcpy(dataport, query_string, file_name);
+    size_t file_name = query_string ? strnlen(query_string, 4095) + 1 : 0;
+    memcpy_byte(dataport, query_string, file_name);
     emit_event(emit);
 
     /* Wait for response and print out the file */
     block_event(fd);
-    printf("%s", (char *)dataport);
+    for (char *chr = dataport; *chr != 0; chr++) {
+        putchar(*chr);
+    }
     fflush(stdout);
     munmap(dataport, length);
     munmap(emit, length);
