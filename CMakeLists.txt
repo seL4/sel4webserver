@@ -44,6 +44,12 @@ elseif("${PLATFORM}" STREQUAL "odroidc2")
     set(cpp_flags "-DKERNELARMPLATFORM_ODROIDC2")
     set(CAMKES_ROOT_DTB_FILE_PATH "${CAMKES_VM_IMAGES_DIR}/odroidc2/camkes-linux-dtb" CACHE STRING "")
     AddToFileServer("linux-dtb" "${CAMKES_VM_IMAGES_DIR}/odroidc2/linux_crossvm-dtb")
+elseif("${PLATFORM}" STREQUAL "tx2")
+    set(cpp_flags "-DKERNELARMPLATFORM_TX2")
+    set(rootfs_file "${CAMKES_VM_IMAGES_DIR}/${KernelARMPlatform}/rootfs.cpio.gz")
+    set(dtb_file "${CAMKES_VM_IMAGES_DIR}/tx2/linux-ethernet-dtb")
+    set(CAMKES_ROOT_DTB_FILE_PATH "${CAMKES_VM_IMAGES_DIR}/tx2/linux-ethernet-dtb" CACHE STRING "")
+    AddFileToOverlayDir("connection.ko" "${CAMKES_VM_IMAGES_DIR}/${KernelARMPlatform}/connection.ko" "lib/modules/4.4.38L4T kernel 4.4.38/kernel/drivers/vmm" overlay)
 endif()
 
 if(MULTI_VM_LAN)
@@ -185,6 +191,17 @@ else()
         GZIP
     )
     AddToFileServer("linux-initrd" ${output_overlayed_rootfs_location} DEPENDS rootfs_target)
+    if("${PLATFORM}" STREQUAL "tx2")
+        # Updated dtb based on initrd
+        UpdateDtbFromInitrd(
+            ${dtb_file}
+            ${output_overlayed_rootfs_location}
+            "0xf7000000"
+            dtb_gen_target
+            output_dtb_location
+        )
+        AddToFileServer("linux-dtb" "${output_dtb_location}" DEPENDS dtb_gen_target)
+    endif()
 endif()
 
 AddToFileServer("linux" "${CAMKES_VM_IMAGES_DIR}/${KernelARMPlatform}/linux")
