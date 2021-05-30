@@ -25,6 +25,7 @@ multiple VM's serving a static website. The multiple VM configuration has an add
 as an network access point for the other VMs.
 It would be possible to modify which static website is being served by modifying the static html files located in `/run/site/`
 in the Linux guest's file system.
+If you don't have [odroid-xu4][odroid-xu4] to test this project you still can use emulation. Please see "Configure: Single VM Webserver (qemu-arm-virt)". Notice: currently you will have no network in qemu.  
 
 [odroid-xu4]:https://wiki.odroid.com/odroid-xu4/odroid-xu4
 ## Plans
@@ -131,6 +132,64 @@ You could then navigate to 10.13.1.7:3000 in a web browser on the same local net
 
 [host-dependencies]:https://docs.sel4.systems/HostDependencies
 [docsite-deps]:https://github.com/SEL4PROJ/docs/blob/master/tools/Dockerfile
+
+#### Configure: Single VM Webserver (qemu-arm-virt)
+```sh
+#Initialise project build directory
+mkdir build
+cd build
+../init-build.sh -DPLATFORM=qemu-arm-virt
+#...
+#Warning: no cpu specified for virt board, fallback on cortex-a53
+#...
+#-- Configuring done
+#-- Generating done
+#-- Build files have been written to: /home/hugo/seL4/sel4webserver/build
+```
+
+#### Build Webserver (qemu-arm-virt)
+```sh
+# build
+ninja
+# [13/443] Performing configure step for 'cgi-load-file'
+# -- The C compiler identification is GNU 9.3.0
+# ...
+# This step will take some time, be patient...
+# [358/443] Completed 'docsite'
+# ...
+# [443/443] Generating images/capdl-loader-image-arm-qemu-arm-virt
+
+# Resulting artifacts:
+ls images
+# capdl-loader-image-arm-qemu-arm-virt
+```
+#### Running seL4 qemu-arm-virt image
+```sh
+./simulate 
+# ./simulate: qemu-system-aarch64 -machine virt,virtualization=on,highmem=off,secure=off -cpu cortex-a53 -nographic  -m size=2048  -kernel images/capdl-loader- image-arm-qemu-arm-virt 
+# ELF-loader started on CPU: ARM Ltd. Cortex-A53 r0p4
+# ...
+# Bootstrapping kernel
+# Warning: Could not infer GIC interrupt target ID, assuming 0.
+# Booting all finished, dropped to user space
+# <<seL4(CPU 0) [decodeUntypedInvocation/205 T0xff80bf817400 "rootserver" @4006f8]: Untyped Retype: Insufficient memory (1 * 2097152 bytes needed, 0 bytes available).>>
+# Loading Linux: 'linux' dtb: 'linux-dtb'
+# ...
+# [    0.000000] Booting Linux on physical CPU 0x0
+# [    0.000000] Linux version 4.9.189+ (alisonf@shinyu-un) (gcc version 6.3.0 20170516 (Debian 6.3.0-18) ) #16 SMP Tue Feb 25 14:14:50 AEDT 2020
+# [    0.000000] Boot CPU: AArch64 Processor [410fd034]
+# ...
+# Starting network: OK
+# [    6.538957] connection: loading out-of-tree module taints kernel.
+# [    6.579046] Event Bar (dev-0) initalised
+# [    6.620310] 2 Dataports (dev-0) initalised
+# ifconfig: SIOCGIFFLAGS: No such device
+# udhcpc: SIOCGIFINDEX: No such device
+#
+# Welcome to Buildroot
+# buildroot login:   
+
+```
 
 ## Contributing
 
