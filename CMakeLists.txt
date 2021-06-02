@@ -97,6 +97,7 @@ else()
             ""
             CONFIGURE_COMMAND
             ""
+            USES_TERMINAL_DOWNLOAD TRUE
             SOURCE_DIR
             ${CMAKE_CURRENT_BINARY_DIR}/linux_out
         )
