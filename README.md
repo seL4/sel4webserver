@@ -25,7 +25,7 @@ multiple VM's serving a static website. The multiple VM configuration has an add
 as an network access point for the other VMs.
 It would be possible to modify which static website is being served by modifying the static html files located in `/run/site/`
 in the Linux guest's file system.
-If you don't have [odroid-xu4][odroid-xu4] to test this project you still can use emulation. Please see "Configure: Single VM Webserver (qemu-arm-virt)". Notice: currently you will have no network in qemu.  
+If you don't have [odroid-xu4][odroid-xu4] to test this project you still can use emulation. Please see "Configure: Single VM Webserver (qemu-arm-virt)". Notice: check "Configure networking (qemu-arm-virt)" to learn more about this topic".   
 
 [odroid-xu4]:https://wiki.odroid.com/odroid-xu4/odroid-xu4
 ## Plans
@@ -187,9 +187,74 @@ ls images
 # udhcpc: SIOCGIFINDEX: No such device
 #
 # Welcome to Buildroot
-# buildroot login:   
+# buildroot login: 
 
 ```
+
+## Configure networking (qemu-arm-virt)
+
+Networking under qemu may be somewhat tricky and specific configuration details may vary depending on the host configuration/distro/etc. Thus here there are some few suggestions to try having your set up ready as easy as possible.
+So, if you want to have networking on your virtualized guest then you can try: 
+
+1st- Configure a dhcp server on the host. 
+2nd- Run "simulate" like this:
+```
+sudo ./simulate --extra-qemu-args="-netdev tap,id=mynet0,ifname=tap0,script=no,downscript=no -device virtio-net,netdev=mynet0,mac=52:55:00:d1:55:01,disable-modern=on,disable-legacy=off"
+```
+3rd- Manually create the bridge interface to connect the guest and the host neworking. Again, here specific commands' syntax depends on every environment. Just as an example here what worked on Ubuntu 20.04:
+
+```
+# sudo brctl addif virbr0 eno1
+# sudo brctl addif virbr0 tap0
+# sudo ifconfig tap0 up
+# sudo ifconfig virbr0 up
+# sudo ifconfig eno1 up
+# brctl show
+```
+Anyway, probably you will need to check the documentation of your specific host distro and qemu version to see how a bridge can be created in your specific setup.
+It is well known that on some deployments qemu scripts automatically takes cares of this so you will be able to skip this last step. 
+
+Thus if everything goes as desired you should see udhcpc getting networking config, that is, something like this:
+
+```
+Starting network: OK
+[    6.431947] connection: loading out-of-tree module taints kernel.
+[    6.469091] Event Bar (dev-0) initalised
+[    6.492662] 2 Dataports (dev-0) initalised
+udhcpc: started, v1.31.0
+[   16.026150] random: mktemp: uninitialized urandom read (6 bytes read)
+udhcpc: sending discover
+udhcpc: sending select for 192.168.122.100
+udhcpc: lease of 192.168.122.100 obtained, lease time 600
+[   17.503524] random: mktemp: uninitialized urandom read (6 bytes read)
+adding dns 8.8.8.8
+adding dns 8.8.4.4
+
+Welcome to Buildroot
+buildroot login:
+
+```
+## Testing the web server (qemu-arm-virt)
+
+Once the networking has been set up, you can check what IP has been assigned to your guest (also it is announced on the screen via udhcpc message...):
+
+```
+udhcpc: sending select for 192.168.122.100
+udhcpc: lease of 192.168.122.100 obtained, lease time 600
+[   17.503524] random: mktemp: uninitialized urandom read (6 bytes read)
+adding dns 8.8.8.8
+adding dns 8.8.4.4
+
+Welcome to Buildroot
+buildroot login: root
+# ifconfig 
+eth0      Link encap:Ethernet  HWaddr 52:55:00:D1:55:01  
+          inet addr:192.168.122.100  Bcast:192.168.122.255  Mask:255.255.255.0
+(...)          
+
+```
+and now just open web browser and open URL: http://<your_assigned_IP>:3000 and you should see an seL4 documentation web page. 
+
 
 ## Contributing
 
