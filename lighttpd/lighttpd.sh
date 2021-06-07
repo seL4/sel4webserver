@@ -14,7 +14,7 @@
 sleep 5
 ifconfig eth0 up
 # Get an IP address
-udhcpc
+nohup udhcpc &
 
 # Start ligttpd with the config file in background
 lighttpd -f /etc/lighttpd.conf
