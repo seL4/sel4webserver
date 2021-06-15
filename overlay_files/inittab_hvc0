@@ -1,4 +1,3 @@
-# @TAG(CUSTOM)
 # /etc/inittab
 #
 # Copyright (C) 2001 Erik Andersen <andersen@codepoet.org>
@@ -13,6 +12,8 @@
 # runlevels == ignored
 # action    == one of sysinit, respawn, askfirst, wait, and once
 # process   == program to run
+
+# SPDX-License-Identifier: GPL-2.0-only
 
 # Startup the system
 ::sysinit:/bin/mount -t proc proc /proc
