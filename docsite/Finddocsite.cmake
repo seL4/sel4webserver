@@ -19,7 +19,7 @@ macro(docsite_build_site_tar outfile)
     ExternalProject_Add(
         docsite
         GIT_REPOSITORY
-        https://github.com/SEL4PROJ/docs.git
+        https://github.com/seL4/docs.git
         GIT_SHALLOW
         TRUE
         GIT_PROGRESS
