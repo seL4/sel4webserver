@@ -17,21 +17,24 @@
 #include <errno.h>
 #include <string.h>
 
-void block_event(int fd) {
-	int val;
-	/* Blocking read */
-	int result = read(fd, &val, sizeof(val));
-	if (result < 0) {
-	    printf("Error: %s\n", strerror(errno));
-	} 
+void block_event(int fd)
+{
+    int val;
+    /* Blocking read */
+    int result = read(fd, &val, sizeof(val));
+    if (result < 0) {
+        printf("Error: %s\n", strerror(errno));
+    }
 
 }
 
-void emit_event(char* emit) {
-	emit[0] = 1;
+void emit_event(char *emit)
+{
+    emit[0] = 1;
 }
 
-void memcpy_byte(void *dst, void *src, size_t size) {
+void memcpy_byte(void *dst, void *src, size_t size)
+{
     char *dst_c = dst;
     char *src_c = src;
     for (int i = 0; i < size; i++) {

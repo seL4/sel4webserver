@@ -24,7 +24,8 @@ macro(docsite_build_site_tar outfile)
         ON
         BUILD_IN_SOURCE
         TRUE
-        USES_TERMINAL_BUILD TRUE
+        USES_TERMINAL_BUILD
+        TRUE
         BUILD_COMMAND
         "make;build"
         INSTALL_COMMAND
