@@ -9,7 +9,6 @@ include(settings.cmake)
 
 project(sel4webserver C ASM)
 
-
 find_package(camkes-arm-vm REQUIRED)
 camkes_arm_vm_setup_arm_vm_environment()
 
@@ -36,32 +35,77 @@ elseif("${PLATFORM}" STREQUAL "qemu-arm-virt")
     endif()
 elseif("${PLATFORM}" STREQUAL "odroidc2")
     set(cpp_flags "-DKERNELARMPLATFORM_ODROIDC2")
-    set(CAMKES_ROOT_DTB_FILE_PATH "${CAMKES_VM_IMAGES_DIR}/odroidc2/camkes-linux-dtb" CACHE STRING "")
+    set(
+        CAMKES_ROOT_DTB_FILE_PATH "${CAMKES_VM_IMAGES_DIR}/odroidc2/camkes-linux-dtb"
+        CACHE STRING ""
+    )
     AddToFileServer("linux-dtb" "${CAMKES_VM_IMAGES_DIR}/odroidc2/linux_crossvm-dtb")
 elseif("${PLATFORM}" STREQUAL "tx2")
     set(cpp_flags "-DKERNELARMPLATFORM_TX2")
     set(rootfs_file "${CAMKES_VM_IMAGES_DIR}/${KernelARMPlatform}/rootfs.cpio.gz")
     set(dtb_file "${CAMKES_VM_IMAGES_DIR}/tx2/linux-ethernet-dtb")
     set(CAMKES_ROOT_DTB_FILE_PATH "${CAMKES_VM_IMAGES_DIR}/tx2/linux-ethernet-dtb" CACHE STRING "")
-    AddFileToOverlayDir("connection.ko" "${CAMKES_VM_IMAGES_DIR}/${KernelARMPlatform}/connection.ko" "lib/modules/4.4.38L4T kernel 4.4.38/kernel/drivers/vmm" overlay)
+    AddFileToOverlayDir(
+        "connection.ko"
+        "${CAMKES_VM_IMAGES_DIR}/${KernelARMPlatform}/connection.ko"
+        "lib/modules/4.4.38L4T kernel 4.4.38/kernel/drivers/vmm"
+        overlay
+    )
 endif()
 
 if(MULTI_VM_LAN)
     # Setup our passthrough vm overlay
-    AddFileToOverlayDir("inittab" ${CMAKE_CURRENT_SOURCE_DIR}/overlay_files/inittab_hvc0 "etc" overlay_vm0)
-    AddFileToOverlayDir("S90bridge_setup" ${CMAKE_CURRENT_SOURCE_DIR}/overlay_files/vm0_bridge_setup.sh "etc/init.d" overlay_vm0)
-    AddOverlayDirToRootfs(overlay_vm0 ${rootfs_file} "buildroot" "rootfs_install"
-                          vm0_output_overlayed_rootfs_location rootfs_target_vm0
-                          GZIP)
+    AddFileToOverlayDir(
+        "inittab"
+        ${CMAKE_CURRENT_SOURCE_DIR}/overlay_files/inittab_hvc0
+        "etc"
+        overlay_vm0
+    )
+    AddFileToOverlayDir(
+        "S90bridge_setup"
+        ${CMAKE_CURRENT_SOURCE_DIR}/overlay_files/vm0_bridge_setup.sh
+        "etc/init.d"
+        overlay_vm0
+    )
+    AddOverlayDirToRootfs(
+        overlay_vm0
+        ${rootfs_file}
+        "buildroot"
+        "rootfs_install"
+        vm0_output_overlayed_rootfs_location
+        rootfs_target_vm0
+        GZIP
+    )
     # Setup our client vm overlays
-    AddFileToOverlayDir("inittab" ${CMAKE_CURRENT_SOURCE_DIR}/overlay_files/inittab_hvc0 "etc" overlay_client_vm)
+    AddFileToOverlayDir(
+        "inittab"
+        ${CMAKE_CURRENT_SOURCE_DIR}/overlay_files/inittab_hvc0
+        "etc"
+        overlay_client_vm
+    )
     lighttpd_install_to_overlay(overlay_client_vm)
     docsite_install_to_overlay(overlay_client_vm)
-    AddOverlayDirToRootfs(overlay_client_vm ${rootfs_file} "buildroot" "rootfs_install"
-                          client_output_overlayed_rootfs_location rootfs_target_client_vm
-                          GZIP)
-    AddToFileServer("linux-initrd-vm0" "${vm0_output_overlayed_rootfs_location}" DEPENDS rootfs_target_vm0)
-    AddToFileServer("linux-initrd-vm-client" "${client_output_overlayed_rootfs_location}" DEPENDS rootfs_target_client_vm)
+    AddOverlayDirToRootfs(
+        overlay_client_vm
+        ${rootfs_file}
+        "buildroot"
+        "rootfs_install"
+        client_output_overlayed_rootfs_location
+        rootfs_target_client_vm
+        GZIP
+    )
+    AddToFileServer(
+        "linux-initrd-vm0"
+        "${vm0_output_overlayed_rootfs_location}"
+        DEPENDS
+        rootfs_target_vm0
+    )
+    AddToFileServer(
+        "linux-initrd-vm-client"
+        "${client_output_overlayed_rootfs_location}"
+        DEPENDS
+        rootfs_target_client_vm
+    )
 else()
 
     # Build crossvm kernel module for qemu
@@ -91,13 +135,17 @@ else()
             ""
             CONFIGURE_COMMAND
             ""
-            USES_TERMINAL_DOWNLOAD TRUE
+            USES_TERMINAL_DOWNLOAD
+            TRUE
             SOURCE_DIR
             ${CMAKE_CURRENT_BINARY_DIR}/linux_out
         )
         # Linux config and symvers are to be copied to unpacked archive
         set(linux_config "${CAMKES_VM_IMAGES_DIR}/${KernelARMPlatform}/linux_configs/config")
-        set(linux_symvers "${CAMKES_VM_IMAGES_DIR}/${KernelARMPlatform}/linux_configs/Module.symvers")
+        set(
+            linux_symvers
+            "${CAMKES_VM_IMAGES_DIR}/${KernelARMPlatform}/linux_configs/Module.symvers"
+        )
         # Configure unpacked archive with config and symvers
         ConfigureLinux(
             ${CMAKE_CURRENT_BINARY_DIR}/linux_out
@@ -161,7 +209,8 @@ else()
             ON
             EXCLUDE_FROM_ALL
             CMAKE_ARGS
-            -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} -DCMAKE_C_FLAGS=${BASE_C_FLAGS}
+            -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+            -DCMAKE_C_FLAGS=${BASE_C_FLAGS}
         )
 
         AddExternalProjFilesToOverlay(
@@ -173,7 +222,6 @@ else()
             ${item}
         )
     endforeach()
-
 
     # Generate overlayed rootfs
     AddOverlayDirToRootfs(
@@ -204,11 +252,15 @@ DefineCAmkESVMFileServer()
 
 CAmkESAddImportPath(${KernelARMPlatform})
 
-
 # Define our demo component that shares a dataport with the VM
 include(cpio)
 MakeCPIO(secure_file_archive.o ${CMAKE_CURRENT_SOURCE_DIR}/secure_file.html)
-DeclareCAmkESComponent(LoggingFileserver SOURCES components/logging-fileserver/fileserver.c secure_file_archive.o)
+DeclareCAmkESComponent(
+    LoggingFileserver
+    SOURCES
+    components/logging-fileserver/fileserver.c
+    secure_file_archive.o
+)
 
 # Define our VM Component with out cross vm dataports glue code
 DeclareCAmkESComponent(VM SOURCES src/cross_vm_connections.c)
