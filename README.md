@@ -264,6 +264,40 @@ eth0      Link encap:Ethernet  HWaddr 52:55:00:D1:55:01
 
 and now just open web browser and open URL: `http://<your_assigned_IP>:3000` and you should see an seL4 documentation web page.
 
+## Building webserver using docker container
+
+Add these lines to  
+seL4-CAmkES-L4v-dockerfiles/dockerfiles/extras.Dockerfile:
+
+```
+RUN sudo apt-get -y install rubygems ruby-dev gcc-9 g++-9 \
+    && sudo gem install bundler \
+    && sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 900 \
+    && sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 900 \
+```
+
+Also, there is a compilation problem in the sel4_projects_libs project, it is fixed in the current branch but it doesn't work in the version used by this project, because the compiler version installed in the docker image is not gcc-8 (it doesn't work either even you use the gcc-9 version):
+
+```
+/usr/lib/gcc-cross/aarch64-linux-gnu/10/../../../../aarch64-linux-gnu/bin/ld: sel4_projects_libs/libsel4vm/libsel4vm.a(vgic.c.obj):/host/projects/seL4_projects_libs/libsel4vm/src/arch/arm/vgic/vgic.h:15: multiple definition of `dev_vgic_dist'; sel4_projects_libs/libsel4vm/libsel4vm.a(guest_irq_controller.c.obj):/host/projects/seL4_projects_libs/libsel4vm/src/arch/arm/vgic/vgic.h:15: first defined here
+```
+
+You can fix it by removing this line in the file `projects/seL4_projects_libs/libsel4vm/src/arch/arm/vgic/vgic.h:L15`
+```
+// const struct vgic_dist_device dev_vgic_dist;
+```
+and adding it to `projects/seL4_projects_libs/libsel4vm/src/arch/arm/vgic/vgic.c:L125`
+```
+const struct vgic_dist_device dev_vgic_dist;
+``` 
+
+Then, run container in the webserver folder:
+```
+/sel4webserver# container
+@in-container:/host$ mkdir build
+@in-container:/host/build$ ../init-build.sh -DPLATFORM=qemu-arm-virt
+@in-container:/host/build$ ninja
+```
 
 ## Contributing
 
