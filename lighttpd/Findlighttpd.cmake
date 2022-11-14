@@ -23,7 +23,7 @@ macro(lighttpd_build_server outfile)
     ExternalProject_Add(
         libpcre
         URL
-        https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz
+        https://sourceforge.net/projects/pcre/files/pcre/8.43/pcre-8.43.tar.gz
         BINARY_DIR
         ${CMAKE_CURRENT_BINARY_DIR}/libprce-prefix/src/libpcre
         BUILD_ALWAYS
