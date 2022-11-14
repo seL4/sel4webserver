@@ -267,9 +267,9 @@ DeclareCAmkESComponent(VM SOURCES src/cross_vm_connections.c)
 
 # Declare root server
 if(MULTI_VM_LAN)
-    DeclareCAmkESRootserver(multi_main.camkes CPP_INCLUDES ${CAMKES_ARM_VM_DIR}/components/VM)
+    DeclareCAmkESRootserver(multi_main.camkes CPP_INCLUDES ${CAMKES_ARM_VM_DIR}/components/VM_Arm)
 else()
-    DeclareCAmkESRootserver(main.camkes CPP_INCLUDES ${CAMKES_ARM_VM_DIR}/components/VM)
+    DeclareCAmkESRootserver(main.camkes CPP_INCLUDES ${CAMKES_ARM_VM_DIR}/components/VM_Arm)
 endif()
 # Now generate the root server and the global configuration
 GenerateCAmkESRootserver()
