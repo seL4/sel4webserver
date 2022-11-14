@@ -19,9 +19,10 @@ multiple VM's serving a static website. The multiple VM configuration has an add
 as an network access point for the other VMs.
 It would be possible to modify which static website is being served by modifying the static html files located in `/run/site/`
 in the Linux guest's file system.
-If you don't have [odroid-xu4][odroid-xu4] to test this project you still can use emulation. Please see "Configure: Single VM Webserver (qemu-arm-virt)". Notice: check "Configure networking (qemu-arm-virt)" to learn more about this topic".   
+If you don't have [odroid-xu4][odroid-xu4] to test this project you still can use emulation. Please see "Configure: Single VM Webserver (qemu-arm-virt)". Notice: check "Configure networking (qemu-arm-virt)" to learn more about this topic".
 
 [odroid-xu4]:https://wiki.odroid.com/odroid-xu4/odroid-xu4
+
 ## Plans
 
 The purpose of this project is to build up a set of reference artifacts and system configurations
@@ -39,14 +40,16 @@ access point but also have functions that need to be strongly isolated in a secu
 - Performance analysis/optimisation
 
 ### Long-term
+
 - More complex system design
 
 ## Setup
 
-This project is based on an Arm VMM running inside a camkes system and therefore requires all of the 
+This project is based on an Arm VMM running inside a camkes system and therefore requires all of the
 Camkes dependencies described in [Host Dependencies][host-dependencies].
 
 Additional dependencies required to run a lighttpd webserver serving docs.sel4.systems in a Linux guest:
+
 - [docsite dependencies][docsite-deps]: Dependencies required to build docs.sel4.systems.
 - libpcre3-dev:armel
 - zlib compression library, armel arch: Required for building lighttpd (debian package: zlib1g-dev:armel)
@@ -59,11 +62,12 @@ Additional dependencies required to run a lighttpd webserver serving docs.sel4.s
 # After initialising a fresh directory
 
 # Obtain sources via repo tool
-repo init -u https://github.com/SEL4PROJ/sel4webserver-manifest.git
+repo init -u https://github.com/seL4/sel4webserver-manifest.git
 repo sync
 ```
 
 #### Configure: Single VM Webserver
+
 ```sh
 # Initalise project build directory
 mkdir build
@@ -73,7 +77,9 @@ cd build
 # -- Generating done
 # -- Build files have been written to: /tmp/tmp.xmwD2Fc3FW/buildweb
 ```
+
 #### Configure: Multi-VM Webserver
+
 ```sh
 # Initalise project build directory
 mkdir build
@@ -85,6 +91,7 @@ cd build
 ```
 
 #### Build Webserver
+
 ```sh
 # build
 ninja
@@ -122,12 +129,14 @@ Welcome to Buildroot
 buildroot login:
 
 ```
+
 You could then navigate to 10.13.1.7:3000 in a web browser on the same local network.
 
-[host-dependencies]:https://docs.sel4.systems/HostDependencies
-[docsite-deps]:https://github.com/SEL4PROJ/docs/blob/master/tools/Dockerfile
+[host-dependencies]: https://docs.sel4.systems/projects/buildsystem/host-dependencies.html
+[docsite-deps]: https://github.com/seL4/docs/blob/master/tools/Dockerfile
 
 #### Configure: Single VM Webserver (qemu-arm-virt)
+
 ```sh
 #Initialise project build directory
 mkdir build
@@ -142,6 +151,7 @@ cd build
 ```
 
 #### Build Webserver (qemu-arm-virt)
+
 ```sh
 # build
 ninja
@@ -157,10 +167,12 @@ ninja
 ls images
 # capdl-loader-image-arm-qemu-arm-virt
 ```
+
 #### Running seL4 qemu-arm-virt image
+
 ```sh
-./simulate 
-# ./simulate: qemu-system-aarch64 -machine virt,virtualization=on,highmem=off,secure=off -cpu cortex-a53 -nographic  -m size=2048  -kernel images/capdl-loader- image-arm-qemu-arm-virt 
+./simulate
+# ./simulate: qemu-system-aarch64 -machine virt,virtualization=on,highmem=off,secure=off -cpu cortex-a53 -nographic  -m size=2048  -kernel images/capdl-loader-image-arm-qemu-arm-virt
 # ELF-loader started on CPU: ARM Ltd. Cortex-A53 r0p4
 # ...
 # Bootstrapping kernel
@@ -181,32 +193,35 @@ ls images
 # udhcpc: SIOCGIFINDEX: No such device
 #
 # Welcome to Buildroot
-# buildroot login: 
+# buildroot login:
 
 ```
 
 ## Configure networking (qemu-arm-virt)
 
 Networking under qemu may be somewhat tricky and specific configuration details may vary depending on the host configuration/distro/etc. Thus here there are some few suggestions to try having your set up ready as easy as possible.
-So, if you want to have networking on your virtualized guest then you can try: 
+So, if you want to have networking on your virtualized guest then you can try:
 
-1st- Configure a dhcp server on the host. 
+1st- Configure a dhcp server on the host.
 2nd- Run "simulate" like this:
-```
+
+```sh
 sudo ./simulate --extra-qemu-args="-netdev tap,id=mynet0,ifname=tap0,script=no,downscript=no -device virtio-net,netdev=mynet0,mac=52:55:00:d1:55:01,disable-modern=on,disable-legacy=off"
 ```
-3rd- Manually create the bridge interface to connect the guest and the host neworking. Again, here specific commands' syntax depends on every environment. Just as an example here what worked on Ubuntu 20.04:
 
+3rd- Manually create the bridge interface to connect the guest and the host networking. Again, here specific commands' syntax depends on every environment. Just as an example here what worked on Ubuntu 20.04:
+
+```sh
+sudo brctl addif virbr0 eno1
+sudo brctl addif virbr0 tap0
+sudo ifconfig tap0 up
+sudo ifconfig virbr0 up
+sudo ifconfig eno1 up
+brctl show
 ```
-# sudo brctl addif virbr0 eno1
-# sudo brctl addif virbr0 tap0
-# sudo ifconfig tap0 up
-# sudo ifconfig virbr0 up
-# sudo ifconfig eno1 up
-# brctl show
-```
+
 Anyway, probably you will need to check the documentation of your specific host distro and qemu version to see how a bridge can be created in your specific setup.
-It is well known that on some deployments qemu scripts automatically takes cares of this so you will be able to skip this last step. 
+It is well known that on some deployments qemu scripts automatically takes cares of this so you will be able to skip this last step.
 
 Thus if everything goes as desired you should see udhcpc getting networking config, that is, something like this:
 
@@ -226,8 +241,8 @@ adding dns 8.8.4.4
 
 Welcome to Buildroot
 buildroot login:
-
 ```
+
 ## Testing the web server (qemu-arm-virt)
 
 Once the networking has been set up, you can check what IP has been assigned to your guest (also it is announced on the screen via udhcpc message...):
@@ -241,21 +256,24 @@ adding dns 8.8.4.4
 
 Welcome to Buildroot
 buildroot login: root
-# ifconfig 
-eth0      Link encap:Ethernet  HWaddr 52:55:00:D1:55:01  
+# ifconfig
+eth0      Link encap:Ethernet  HWaddr 52:55:00:D1:55:01
           inet addr:192.168.122.100  Bcast:192.168.122.255  Mask:255.255.255.0
-(...)          
-
+(...)
 ```
-and now just open web browser and open URL: http://<your_assigned_IP>:3000 and you should see an seL4 documentation web page. 
+
+and now just open web browser and open URL: `http://<your_assigned_IP>:3000` and you should see an seL4 documentation web page.
 
 
 ## Contributing
 
 Contributions are welcome in the form of feature requests, documentation requests, or documentation/code contributions.
-See https://docs.sel4.systems/Contributing for our general contribution guidelinies.
+See [CONTRIBUTING.md] for our general contribution guidelines.
 
 Current code contributions we would be interested to receive:
+
 - Additional platforms
 - Additional VM modules
 - Performance analysis
+
+[CONTRIBUTING.md]: .github/CONTRIBUTING.md
