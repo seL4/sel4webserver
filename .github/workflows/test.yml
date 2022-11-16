@@ -1,0 +1,23 @@
+# Copyright 2022, Proofcraft Pty Ltd
+#
+# SPDX-License-Identifier: BSD-2-Clause
+
+# Build web server demo app on pull request
+
+name: Web Server
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ODROID_XU4]
+    steps:
+    - uses: seL4/ci-actions/webserver@master
+      with:
+        platform: ${{ matrix.platform }}
