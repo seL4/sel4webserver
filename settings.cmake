@@ -31,6 +31,10 @@ endif()
 if("${PLATFORM}" STREQUAL "exynos5422")
     set(KernelPlatform exynos5 CACHE STRING "" FORCE)
     set(KernelARMPlatform exynos5422 CACHE STRING "" FORCE)
+    # Due to historic reasons, on ARMv7/AARCH32 hypervisor support is not
+    # enabled by setting KernelArmHypervisorSupport, but a special architecture
+    # 'arm_hyp' must be selected.
+    set(KernelSel4Arch "arm_hyp" CACHE STRING "" FORCE)
 endif()
 if("${PLATFORM}" STREQUAL "qemu-arm-virt")
     if(MULTI_VM_LAN)
@@ -39,14 +43,19 @@ if("${PLATFORM}" STREQUAL "qemu-arm-virt")
         )
     endif()
     set(KernelPlatform qemu-arm-virt CACHE STRING "" FORCE)
-    set(KernelARMPlatform qemu-arm-virt CACHE STRING "" FORCE)
+    # For QEMU, setting KernelArmCPU implicitly selects AARCH32/AARCH64 also.
+    # For AARCH64, enabling KernelArmHypervisorSupport activates hypervisor
+    # support. On AARCH32, due to historic reasons, hypervisor support is
+    # enabled by selecting a special kernel architecture:
+    #    set(KernelSel4Arch "arm_hyp" CACHE STRING "" FORCE)
+    set(KernelArmCPU cortex-a53 CACHE STRING "" FORCE)
+    set(KernelArmHypervisorSupport ON CACHE BOOL "" FORCE)
+
     set(QEMU_MEMORY "2048")
     set(
         qemu_sim_extra_args
         "-netdev tap,id=mynet0,ifname=tap0,script=no,downscript=no -device virtio-net,netdev=mynet0,mac=52:55:00:d1:55:01"
     )
-    set(KernelArmCPU cortex-a53 CACHE STRING "" FORCE)
-    set(KernelArmHypervisorSupport ON CACHE BOOL "" FORCE)
 endif()
 if("${PLATFORM}" STREQUAL "odroidc2")
     set(KernelPlatform odroidc2 CACHE STRING "" FORCE)
@@ -61,7 +70,6 @@ if("${PLATFORM}" STREQUAL "tx2")
     set(VmVirtioNet ON CACHE BOOL "" FORCE)
     set(VmDtbFile ON CACHE BOOL "" FORCE)
 endif()
-set(KernelSel4Arch "arm_hyp" CACHE STRING "" FORCE)
 set(KernelRootCNodeSizeBits 18 CACHE STRING "" FORCE)
 set(KernelArmVtimerUpdateVOffset OFF CACHE BOOL "" FORCE)
 set(KernelArmDisableWFIWFETraps ON CACHE BOOL "" FORCE)
