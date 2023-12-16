@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ODROID_XU4, ODROID_C2, TX2]
+        platform: [ARMVIRT, ODROID_XU4, ODROID_C2, TX2]
     steps:
     - uses: seL4/ci-actions/webserver@master
       with:
