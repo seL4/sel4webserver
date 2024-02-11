@@ -54,6 +54,7 @@ jobs:
   hw-run:
     name: Hardware
     runs-on: ubuntu-latest
+    if: ${{ github.repository_owner == 'seL4' }}
     needs: [build]
     strategy:
       fail-fast: false
@@ -83,6 +84,7 @@ jobs:
   deploy:
     name: Deploy manifest
     runs-on: ubuntu-latest
+    if: ${{ github.repository_owner == 'seL4' }}
     needs: [code, hw-run]
     steps:
     - name: Deploy
