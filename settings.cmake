@@ -92,3 +92,8 @@ ApplyData61ElfLoaderSettings(${KernelARMPlatform} ${KernelSel4Arch})
 
 # Release settings
 ApplyCommonReleaseVerificationSettings(FALSE FALSE)
+
+if (KernelSel4ArchAarch32)
+    # Set correct aarch32 TLS register config
+    set(KernelArmTLSReg tpidruro CACHE STRING "" FORCE)
+endif()
