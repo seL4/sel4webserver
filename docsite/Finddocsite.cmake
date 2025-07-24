@@ -14,6 +14,8 @@ macro(docsite_build_site_tar outfile)
         docsite
         GIT_REPOSITORY
         https://github.com/seL4/docs.git
+        GIT_TAG
+        gh-pages
         GIT_SHALLOW
         TRUE
         GIT_PROGRESS
@@ -27,13 +29,13 @@ macro(docsite_build_site_tar outfile)
         USES_TERMINAL_BUILD
         TRUE
         BUILD_COMMAND
-        "make;build"
+        "" # Nothing to build, gh-pages contains pre-built site
         INSTALL_COMMAND
-        "rm;-rf;_site/Hardware/CEI_TK1_SOM/"
+        "rm;-rf;Hardware/CEI_TK1_SOM/"
         COMMAND
-        "tar;-cvzf;site.tar.gz;_site/"
+        "tar;-cvzf;../site.tar.gz;-C;..;docsite"
         COMMAND
-        "mv;site.tar.gz;${CMAKE_CURRENT_BINARY_DIR}"
+        "mv;../site.tar.gz;${CMAKE_CURRENT_BINARY_DIR}"
         EXCLUDE_FROM_ALL
     )
     include(external-project-helpers)
