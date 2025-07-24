@@ -18,6 +18,15 @@ jobs:
       matrix:
         platform: [ODROID_XU4, ODROID_C2, TX2]
     steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: 3.9
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.3.1'
+        bundler-cache: true
+    - run: pip3 install -U camkes-deps
+    - run: sudo apt-get install doxygen
     - uses: seL4/ci-actions/webserver@master
       with:
         platform: ${{ matrix.platform }}
