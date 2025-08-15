@@ -4,73 +4,54 @@
 # SPDX-License-Identifier: BSD-2-Clause
 #
 
-set(LIGHTTPD_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE STRING "")
-set(LIGHTTPD_CONF "${LIGHTTPD_DIR}/lighttpd.conf" CACHE STRING "")
-set(LIGHTTPD_RUN_SCRIPT "${LIGHTTPD_DIR}/lighttpd.sh" CACHE STRING "")
+set(LIGHTTPD_DIR
+    "${CMAKE_CURRENT_LIST_DIR}"
+    CACHE STRING ""
+)
+set(LIGHTTPD_CONF
+    "${LIGHTTPD_DIR}/lighttpd.conf"
+    CACHE STRING ""
+)
+set(LIGHTTPD_RUN_SCRIPT
+    "${LIGHTTPD_DIR}/lighttpd.sh"
+    CACHE STRING ""
+)
 mark_as_advanced(LIGHTTPD_DIR LIGHTTPD_CONF LIGHTTPD_RUN_SCRIPT)
 
 macro(lighttpd_build_server outfile)
-    string(
-        REGEX
-            MATCH
-            "^(.+)\-$"
-            config_host
-            "${CROSS_COMPILER_PREFIX}"
-    )
+    string(REGEX MATCH "^(.+)\-$" config_host "${CROSS_COMPILER_PREFIX}")
     set(config_host "${CMAKE_MATCH_1}")
     include(ExternalProject)
     # Static compile of pcre library
     ExternalProject_Add(
         libpcre
-        URL
-        https://sourceforge.net/projects/pcre/files/pcre/8.43/pcre-8.43.tar.gz
-        BINARY_DIR
-        ${CMAKE_CURRENT_BINARY_DIR}/libprce-prefix/src/libpcre
-        BUILD_ALWAYS
-        ON
-        EXCLUDE_FROM_ALL
-        SOURCE_DIR
+        URL https://sourceforge.net/projects/pcre/files/pcre/8.43/pcre-8.43.tar.gz
+        BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/libprce-prefix/src/libpcre
+        BUILD_ALWAYS ON
+        EXCLUDE_FROM_ALL SOURCE_DIR
         ${CMAKE_CURRENT_BINARY_DIR}/libprce-prefix/src/libpcre
         CONFIGURE_COMMAND
-        ./configure
-        --host=${config_host}
-        CC=${CMAKE_C_COMPILER}
-        AR=${CMAKE_AR}
-        STRIP=${DCMAKE_STRIP}
-        RANLIB=${CMAKE_RANLIB}
-        --prefix=${CMAKE_CURRENT_BINARY_DIR}/libpcre/_install
-        BUILD_COMMAND
-        make
-        INSTALL_COMMAND
-        make
-        install
+            ./configure --host=${config_host} CC=${CMAKE_C_COMPILER} AR=${CMAKE_AR}
+            STRIP=${DCMAKE_STRIP} RANLIB=${CMAKE_RANLIB}
+            --prefix=${CMAKE_CURRENT_BINARY_DIR}/libpcre/_install
+        BUILD_COMMAND make
+        INSTALL_COMMAND make install
     )
     # Force static linking of pthread symbols
     set(linker_flags -static\ -u\ pthread_mutex_lock\ -u\ pthread_mutex_unlock\ -lpthread)
     find_package(Git)
     ExternalProject_Add(
         lighttpd
-        GIT_REPOSITORY
-        https://github.com/lighttpd/lighttpd1.4.git
-        GIT_SHALLOW
-        TRUE
-        GIT_PROGRESS
-        TRUE
-        GIT_TAG
-        lighttpd-1.4.55
-        PATCH_COMMAND
-        ${GIT_EXECUTABLE}
-        apply
-        ${LIGHTTPD_DIR}/lighttpd_cmake.patch
-        ${LIGHTTPD_DIR}/lemon_cmake.patch
-        BINARY_DIR
-        ${CMAKE_CURRENT_BINARY_DIR}/lighttpd
-        BUILD_ALWAYS
-        ON
-        INSTALL_COMMAND
-        "" # Don't run install command
-        EXCLUDE_FROM_ALL
-        CMAKE_ARGS
+        GIT_REPOSITORY https://github.com/lighttpd/lighttpd1.4.git
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS TRUE
+        GIT_TAG lighttpd-1.4.55
+        PATCH_COMMAND ${GIT_EXECUTABLE} apply ${LIGHTTPD_DIR}/lighttpd_cmake.patch
+                      ${LIGHTTPD_DIR}/lemon_cmake.patch
+        BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/lighttpd
+        BUILD_ALWAYS ON
+        INSTALL_COMMAND "" # Don't run install command
+        EXCLUDE_FROM_ALL CMAKE_ARGS
         -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
         -DBUILD_STATIC=ON
         -DCMAKE_C_FLAGS=-I${LIGHTTPD_DIR}
@@ -79,15 +60,11 @@ macro(lighttpd_build_server outfile)
         -DCMAKE_FIND_LIBRARY_SUFFIXES=".a"
         -DPCRE_CONFIG="${CMAKE_CURRENT_BINARY_DIR}/libpcre/_install/bin/pcre-config"
         -DWITH_ZLIB=0
-        DEPENDS
-        libpcre
+        DEPENDS libpcre
     )
     include(external-project-helpers)
     DeclareExternalProjObjectFiles(
-        lighttpd
-        ${CMAKE_CURRENT_BINARY_DIR}/lighttpd
-        FILES
-        build/lighttpd
+        lighttpd ${CMAKE_CURRENT_BINARY_DIR}/lighttpd FILES build/lighttpd
     )
     set(${outfile} ${CMAKE_CURRENT_BINARY_DIR}/lighttpd/build/lighttpd)
 endmacro()
@@ -102,9 +79,5 @@ endmacro()
 
 include(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(
-    lighttpd
-    DEFAULT_MSG
-    LIGHTTPD_DIR
-    LIGHTTPD_CONF
-    LIGHTTPD_RUN_SCRIPT
+    lighttpd DEFAULT_MSG LIGHTTPD_DIR LIGHTTPD_CONF LIGHTTPD_RUN_SCRIPT
 )
