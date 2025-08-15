@@ -6,7 +6,7 @@
 
 #include <configurations/vm.h>
 
-#define VM_INITRD_MAX_SIZE 0x1900000 //25 MB
+#define VM_INITRD_MAX_SIZE 0x3200000 //50 MB
 #define VM_RAM_BASE 0xF1000000
 #define VM_RAM_SIZE 0x8000000
 #define VM_RAM_OFFSET 0
