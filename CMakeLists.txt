@@ -17,10 +17,9 @@ include(${CAMKES_VM_LINUX_HELPERS_PATH})
 include(${CAMKES_VM_LINUX_MODULE_HELPERS_PATH})
 include(${CAMKES_VM_LINUX_SOURCE_HELPERS_PATH})
 
-# Setup and install lighttpd and the docs.sel4.systems site into the vm's rootfs
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/lighttpd ${CMAKE_CURRENT_LIST_DIR}/docsite)
+# Setup and install lighttpd and the example page into the vm's rootfs
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/lighttpd)
 find_package(lighttpd REQUIRED)
-find_package(docsite REQUIRED)
 
 if("${PLATFORM}" STREQUAL "exynos5422")
     set(cpp_flags "-DKERNELARMPLATFORM_EXYNOS5422")
@@ -80,7 +79,10 @@ if(MULTI_VM_LAN)
         "inittab" ${CMAKE_CURRENT_SOURCE_DIR}/overlay_files/inittab_hvc0 "etc" overlay_client_vm
     )
     lighttpd_install_to_overlay(overlay_client_vm)
-    docsite_install_to_overlay(overlay_client_vm)
+    AddFileToOverlayDir(
+        "index.html" ${CMAKE_CURRENT_SOURCE_DIR}/overlay_files/site/index.html "run/site"
+        overlay_vm0
+    )
     AddOverlayDirToRootfs(
         overlay_client_vm
         ${rootfs_file}
@@ -170,7 +172,10 @@ else()
         set(rootfs_file "${CAMKES_VM_IMAGES_DIR}/${KernelARMPlatform}/rootfs_crossvm.cpio.gz")
     endif()
     lighttpd_install_to_overlay(overlay)
-    docsite_install_to_overlay(overlay)
+    AddFileToOverlayDir(
+        "index.html" ${CMAKE_CURRENT_SOURCE_DIR}/overlay_files/site/index.html "run/site"
+        overlay_vm0
+    )
     foreach(item IN ITEMS cgi-load-file)
         ExternalProject_Add(
             ${item}
