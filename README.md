@@ -45,12 +45,11 @@ access point but also have functions that need to be strongly isolated in a secu
 
 ## Setup
 
-This project is based on an Arm VMM running inside a camkes system and therefore requires all of the
+This project is based on an Arm VMM running inside a CAmkES system and therefore requires all of the
 Camkes dependencies described in [Host Dependencies][host-dependencies].
 
-Additional dependencies required to run a lighttpd webserver serving docs.sel4.systems in a Linux guest:
+Additional dependencies required to run a lighttpd webserver serving an example page in a Linux guest:
 
-- [docsite dependencies][docsite-deps]: Dependencies required to build docs.sel4.systems.
 - libpcre3-dev:armel
 - zlib compression library, armel arch: Required for building lighttpd (debian package: zlib1g-dev:armel)
 - pcre regex library, armel arch: Required for building lighttpd (debian package: libpcre3-dev:armel)
@@ -133,7 +132,6 @@ buildroot login:
 You could then navigate to 10.13.1.7:3000 in a web browser on the same local network.
 
 [host-dependencies]: https://docs.sel4.systems/projects/buildsystem/host-dependencies.html
-[docsite-deps]: https://github.com/seL4/docs/blob/master/tools/Dockerfile
 
 #### Configure: Single VM Webserver (qemu-arm-virt)
 
@@ -157,9 +155,6 @@ cd build
 ninja
 # [13/443] Performing configure step for 'cgi-load-file'
 # -- The C compiler identification is GNU 9.3.0
-# ...
-# This step will take some time, be patient...
-# [358/443] Completed 'docsite'
 # ...
 # [443/443] Generating images/capdl-loader-image-arm-qemu-arm-virt
 
