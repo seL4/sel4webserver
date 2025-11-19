@@ -6,13 +6,13 @@
 
 # seL4webserver reference application
 
-This project contains an seL4 webserver application.  Its purpose is to be a reference for
+This repository contains a VM-based seL4 web server application.  Its purpose is to be a reference for
 implementing applications on seL4. Currently there is only a single configuration that runs
-a webserver inside a Linux VM component to serve a static website.
+a web server inside a Linux VM component to serve a static website.
 
 ## Current status
 
-Currently there are two configurations for serving a static website from a webserver running
+There are two configurations for serving a static website from a web server running
 inside a Linux guest on an [odroid-xu4][odroid-xu4] on a local network. This includes a configuration
 with a single VM instance that serves a static website. The second configuration involves
 multiple VM's serving a static website. The multiple VM configuration has an additional VM that acts
@@ -22,26 +22,6 @@ in the Linux guest's file system.
 If you don't have [odroid-xu4][odroid-xu4] to test this project you still can use emulation. Please see "Configure: Single VM Webserver (qemu-arm-virt)". Notice: check "Configure networking (qemu-arm-virt)" to learn more about this topic".
 
 [odroid-xu4]:https://wiki.odroid.com/odroid-xu4/odroid-xu4
-
-## Plans
-
-The purpose of this project is to build up a set of reference artifacts and system configurations
-that leverage seL4's isolation guarantees and different board support packages.  Currently
-everything is run inside a single camkes component and therefore doesn't isolate different components.
-The next steps are to increase the amount of platforms that this app targets and to pull functionality
-out into separate isolated components. We also want to have an idea of performance characteristics for
-this system.  Longer term steps involve constructing more complicated systems that have a network
-access point but also have functions that need to be strongly isolated in a secure way.
-
-### Short-term
-
-- Native application not involving Linux-VM
-- Additional platforms
-- Performance analysis/optimisation
-
-### Long-term
-
-- More complex system design
 
 ## Setup
 
